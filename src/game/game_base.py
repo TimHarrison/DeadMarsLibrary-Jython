@@ -254,5 +254,58 @@ class GameBase(Runnable):
             Canvas.createBufferStrategy(3)
         
         g = bs.getDrawGraphics()
-        g.drawImage
-        
+        g.drawImage(self.db_image, 0, 0, Component.getWidth(), Component.getHeight(), None)
+        g.dispose()
+        bs.show()
+
+
+    def start_game(self):
+        if self.running:
+            return
+        self.thread = Thread(self)
+        self.thread.start()
+        self.running = True
+
+
+    def stop_game(self):
+        if self.running is None:
+            return
+        self.thread.stop()
+        self.running = False
+
+
+    def set_preferred_fps(self, fps):
+        self.period = 1000/fps
+
+
+    def reset_elapsed_time(self):
+        self.game_time.elapsed_game_time.set_span(0)
+        self.game_time.elapsed_real_time.set_span(0)
+
+
+    def add_component(self, game_component):
+        game_component.initialize()
+        game_component.load_content()
+        self.components.add(game_component)
+
+
+    def remove_component(self, game_component):
+        game_component.unload_content()
+        self.components.remove(game_component)
+
+
+    def resume_game(self):
+        self.is_paused = False
+
+
+    def pause_game(self):
+        self.is_paused = True
+
+
+    def print_stats(self):
+        System.out.println("Frame Count/Loss: %s / %s" % (self.frame_count, self.total_frames_skipped))
+        System.out.println("Average FPS: %s" % self.df.format(self.average_fps))
+        System.out.println("Average UPS: %s" % self.df.format(self.average_ups))
+        System.out.println("TIme Spend: %s secs" % self.time_spend_in_game)
+        System.out.println("Total Updates: %s" % self.updates)
+        System.out.println("dbImage: %s" % self.db_image.toString())
